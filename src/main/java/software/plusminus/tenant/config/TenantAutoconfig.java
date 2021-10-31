@@ -5,5 +5,5 @@ import org.springframework.context.annotation.Configuration;
 
 @ComponentScan({"software.plusminus.tenant", "software.plusminus.security", "software.plusminus.jwt"})
 @Configuration
-public class TenantConfig {
+public class TenantAutoconfig {
 }

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-software.plusminus.tenant.config.TenantConfig
+software.plusminus.tenant.config.TenantAutoconfig
