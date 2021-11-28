@@ -14,16 +14,16 @@ import javax.annotation.PostConstruct;
 public class PrimaryTenantService implements TenantService {
 
     @Autowired
-    private List<TenantService> providers;
+    private List<TenantService> services;
 
     @PostConstruct
     private void init() {
-        providers.remove(this);
+        services.remove(this);
     }
 
     @Nullable
     public String currentTenant() {
-        return providers.stream()
+        return services.stream()
                 .map(TenantService::currentTenant)
                 .filter(Objects::nonNull)
                 .findFirst()
