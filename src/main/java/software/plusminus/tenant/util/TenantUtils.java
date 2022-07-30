@@ -24,6 +24,8 @@ public class TenantUtils {
             Filter filter = session.enableFilter("tenantFilter");
             filter.setParameter("tenant", tenant);
             return callable.call();
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
