@@ -13,16 +13,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import software.plusminus.authentication.AuthenticationParameters;
-import software.plusminus.authentication.AuthenticationService;
 import software.plusminus.check.util.JsonUtils;
+import software.plusminus.jwt.service.JwtAuthenticationService;
+import software.plusminus.security.Security;
 import software.plusminus.tenant.TestEntity;
 import software.plusminus.tenant.service.TenantService;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.Cookie;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -39,10 +38,10 @@ public class TenantFilterIntegrationTest {
     @Autowired
     private MockMvc mvc;
     @Autowired
+    private JwtAuthenticationService authenticationService;
+    @Autowired
     private EntityManager entityManager;
 
-    @MockBean
-    private AuthenticationService authenticationService;
     @MockBean
     private TenantService tenantService;
 
@@ -78,10 +77,7 @@ public class TenantFilterIntegrationTest {
         when(tenantService.currentTenant()).thenReturn(null);
         entityManager.persist(entityWithNullTenant);
 
-        cookie = "test-token";
-        AuthenticationParameters parameters = mock(AuthenticationParameters.class);
-        when(parameters.getUsername()).thenReturn("test-user");
-        when(authenticationService.parseToken(cookie)).thenReturn(parameters);
+        cookie = authenticationService.provideToken(Security.builder().username("test-user").build());
     }
 
     @Test

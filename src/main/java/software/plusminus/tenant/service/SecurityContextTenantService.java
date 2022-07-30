@@ -18,6 +18,6 @@ public class SecurityContextTenantService implements TenantService {
     @Nullable
     @Override
     public String currentTenant() {
-        return securityContext.getParameter("tenant");
+        return securityContext.get("tenant");
     }
 }
