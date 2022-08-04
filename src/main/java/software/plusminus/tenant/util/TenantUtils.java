@@ -19,17 +19,26 @@ public class TenantUtils {
 
     @SuppressWarnings({"PMD.CloseResource", "squid:S00112"})
     public <T> T callWithTenant(EntityManager entityManager, String tenant, Callable<T> callable) {
-        Session session = entityManager.unwrap(Session.class);
         try {
-            Filter filter = session.enableFilter("tenantFilter");
-            filter.setParameter("tenant", tenant);
+            enableTenantFilter(entityManager, tenant);
             return callable.call();
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            session.disableFilter("tenantFilter");
+            disableTenantFilter(entityManager);
         }
+    }
+    
+    public void enableTenantFilter(EntityManager entityManager, String tenant) {
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("tenantFilter");
+        filter.setParameter("tenant", tenant);
+    }
+
+    public void disableTenantFilter(EntityManager entityManager) {
+        Session session = entityManager.unwrap(Session.class);
+        session.disableFilter("tenantFilter");
     }
 }
