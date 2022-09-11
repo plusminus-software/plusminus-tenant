@@ -30,13 +30,15 @@ public class TenantUtils {
             disableTenantFilter(entityManager);
         }
     }
-    
+
+    @SuppressWarnings("PMD.CloseResource")
     public void enableTenantFilter(EntityManager entityManager, String tenant) {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("tenantFilter");
         filter.setParameter("tenant", tenant);
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     public void disableTenantFilter(EntityManager entityManager) {
         Session session = entityManager.unwrap(Session.class);
         session.disableFilter("tenantFilter");

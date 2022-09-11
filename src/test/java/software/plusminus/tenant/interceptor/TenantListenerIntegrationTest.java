@@ -39,7 +39,7 @@ public class TenantListenerIntegrationTest {
         entity.setId(null);
         entity.setTenant(null);
         persist(entity);
-        when(tenantService.currentTenant()).thenReturn(null, "TestTenant");
+        when(tenantService.currentTenant()).thenReturn(null);
 
         TestEntity read = entityManager.find(TestEntity.class, entity.getId());
 
