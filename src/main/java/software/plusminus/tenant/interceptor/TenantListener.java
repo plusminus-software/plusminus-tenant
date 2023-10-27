@@ -15,8 +15,8 @@ import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import software.plusminus.tenant.annotation.Tenant;
+import software.plusminus.tenant.context.TenantContext;
 import software.plusminus.tenant.exception.TenantException;
 import software.plusminus.tenant.model.TenantAction;
 import software.plusminus.tenant.service.TenantService;
@@ -38,6 +38,8 @@ public class TenantListener implements PostLoadEventListener,
     
     @Autowired
     private transient EntityManagerFactory entityManagerFactory;
+    @Autowired
+    private transient TenantContext tenantContext;
     @Autowired
     private transient TenantService tenantService;
 
@@ -84,7 +86,7 @@ public class TenantListener implements PostLoadEventListener,
         if (tenant == null) {
             tenant = onNullTenant(action, entity, field.get(), entityPersister, state);
         }
-        checkAccess(action, tenant);
+        tenantContext.checkAccess(action, tenant);
     }
     
     @Nullable
@@ -106,13 +108,6 @@ public class TenantListener implements PostLoadEventListener,
             currentState[index] = value;
         } else {
             throw new TenantException("Can't find '" + propertyToSet + "' property");
-        }
-    }
-
-    private void checkAccess(TenantAction action, @org.springframework.lang.Nullable String tenant) {
-        boolean hasAccess = ObjectUtils.nullSafeEquals(tenantService.currentTenant(), tenant);
-        if (!hasAccess) {
-            throw new TenantException("User has no " + action + " access for tenant " + tenant);
         }
     }
 
