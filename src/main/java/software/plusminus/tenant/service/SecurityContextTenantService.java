@@ -1,23 +1,24 @@
 package software.plusminus.tenant.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import lombok.AllArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import software.plusminus.security.context.SecurityContext;
+import software.plusminus.context.Context;
+import software.plusminus.security.Security;
 
 @Order(1)
+@AllArgsConstructor
 @Component
-@ConditionalOnBean(SecurityContext.class)
-public class SecurityContextTenantService implements TenantService {
+public class SecurityContextTenantService implements TenantProvider {
 
-    @Autowired
-    private SecurityContext securityContext;
+    private Context<Security> securityContext;
     
     @Nullable
     @Override
     public String currentTenant() {
-        return securityContext.get("tenant");
+        return securityContext.optional()
+                .map(value -> value.getOthers().get("tenant"))
+                .orElse(null);
     }
 }

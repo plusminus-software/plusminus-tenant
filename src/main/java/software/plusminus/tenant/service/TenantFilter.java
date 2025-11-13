@@ -1,18 +1,18 @@
-package software.plusminus.tenant.interceptor;
+package software.plusminus.tenant.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import software.plusminus.context.Context;
 import software.plusminus.hibernate.HibernateFilter;
-import software.plusminus.tenant.service.TenantService;
 
 import java.util.Collections;
 import java.util.Map;
 
+@AllArgsConstructor
 @Component
 public class TenantFilter implements HibernateFilter {
 
-    @Autowired
-    private TenantService tenantService;
+    private Context<String> tenantContext;
 
     @Override
     public String filterName() {
@@ -21,6 +21,7 @@ public class TenantFilter implements HibernateFilter {
 
     @Override
     public Map<String, Object> parameters() {
-        return Collections.singletonMap("tenant", tenantService.currentTenant());
+        String tenant = tenantContext.get();
+        return Collections.singletonMap("tenant", tenant == null ? "" : tenant);
     }
 }

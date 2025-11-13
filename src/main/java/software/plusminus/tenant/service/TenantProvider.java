@@ -1,10 +1,10 @@
 package software.plusminus.tenant.service;
 
-import org.springframework.lang.Nullable;
+import javax.annotation.Nullable;
 
-public interface TenantService {
-    
+public interface TenantProvider {
+
     @Nullable
     String currentTenant();
-    
+
 }

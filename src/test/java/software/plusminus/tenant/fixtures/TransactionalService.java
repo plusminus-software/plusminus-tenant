@@ -1,4 +1,4 @@
-package software.plusminus.tenant;
+package software.plusminus.tenant.fixtures;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

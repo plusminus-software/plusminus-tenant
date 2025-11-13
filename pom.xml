@@ -10,7 +10,7 @@
 
     <parent>
         <groupId>software.plusminus</groupId>
-        <artifactId>plusminus-opensource</artifactId>
+        <artifactId>plusminus-parent-public</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath/>
     </parent>
@@ -48,15 +48,26 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>software.plusminus</groupId>
             <artifactId>plusminus-hibernate</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-context</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>software.plusminus</groupId>
+            <artifactId>plusminus-crud</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -66,25 +77,20 @@
         </dependency>
         <dependency>
             <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-security</artifactId>
+            <artifactId>plusminus-security-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <!-- Test -->
         <dependency>
             <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-test</artifactId>
+            <artifactId>plusminus-data</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>software.plusminus</groupId>
-            <artifactId>plusminus-jwt-test</artifactId>
+            <artifactId>plusminus-test</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
