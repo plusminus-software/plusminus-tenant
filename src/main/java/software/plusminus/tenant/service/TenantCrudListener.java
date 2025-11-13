@@ -7,6 +7,7 @@ import software.plusminus.context.Context;
 import software.plusminus.crud.CrudAction;
 import software.plusminus.crud.listener.CrudListener;
 import software.plusminus.tenant.annotation.Tenant;
+import software.plusminus.tenant.exception.NotFoundException;
 import software.plusminus.tenant.exception.TenantException;
 import software.plusminus.util.FieldUtils;
 
@@ -21,6 +22,10 @@ public class TenantCrudListener implements CrudListener<Object> {
 
     @Override
     public void onAction(Object object, CrudAction action) {
+        onAction(object, action, false);
+    }
+
+    private void onAction(Object object, CrudAction action, boolean singleRead) {
         Optional<Field> field = FieldUtils.findFirstWithAnnotation(object.getClass(), Tenant.class);
         if (!field.isPresent()) {
             return;
@@ -31,10 +36,15 @@ public class TenantCrudListener implements CrudListener<Object> {
             FieldUtils.write(object, contextTenant, field.get());
             return;
         }
-        checkAccess(objectTenant, contextTenant);
+        checkAccess(objectTenant, contextTenant, singleRead);
     }
 
-    private void checkAccess(String objectTenant, String contextTenant) {
+    @Override
+    public void onSingleRead(Object object) {
+        onAction(object, null, true);
+    }
+
+    private void checkAccess(String objectTenant, String contextTenant, boolean singleRead) {
         if (objectTenant == null) {
             objectTenant = "";
         }
@@ -42,8 +52,12 @@ public class TenantCrudListener implements CrudListener<Object> {
             contextTenant = "";
         }
         if (!ObjectUtils.nullSafeEquals(objectTenant, contextTenant)) {
-            throw new TenantException("Cannot peform action on object with tenant " + objectTenant
-                    + " as the current tenant is " + contextTenant);
+            if (singleRead) {
+                throw new NotFoundException();
+            } else {
+                throw new TenantException("Cannot peform action on object with tenant " + objectTenant
+                        + " as the current tenant is " + contextTenant);
+            }
         }
     }
 }

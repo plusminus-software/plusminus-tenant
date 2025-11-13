@@ -3,6 +3,8 @@ package software.plusminus.tenant.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import software.plusminus.tenant.fixtures.TestEntity;
 import software.plusminus.tenant.fixtures.TestRepository;
 import software.plusminus.test.IntegrationTest;
@@ -21,7 +23,7 @@ class TenantFilterTest extends IntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    void filteredByTenant() {
+    void page() {
         TestEntity entity1 = new TestEntity();
         entity1.setMyField("first");
         entity1.setTenant("firstTenant");
@@ -37,5 +39,40 @@ class TenantFilterTest extends IntegrationTest {
         check(page).isNotNull();
         check(page.getTotalElements()).is(1L);
         check(page.getContent().get(0).getMyField()).is("first");
+    }
+
+    @Test
+    void byId() {
+        TestEntity entity = new TestEntity();
+        entity.setMyField("first");
+        entity.setTenant("firstTenant");
+        repository.save(entity);
+        when(firstProvider.currentTenant()).thenReturn("firstTenant");
+
+        TestEntity response = restTemplate.getForObject(
+                url() + "/test/" + entity.getId(),
+                TestEntity.class
+        );
+
+        check(response).isNotNull();
+        check(response.getId()).is(1L);
+        check(response.getTenant()).is("firstTenant");
+        check(response.getMyField()).is("first");
+    }
+
+    @Test
+    void notFound() {
+        TestEntity entity = new TestEntity();
+        entity.setMyField("first");
+        entity.setTenant("firstTenant");
+        repository.save(entity);
+        when(firstProvider.currentTenant()).thenReturn("secondTenant");
+
+        ResponseEntity<TestEntity> response = restTemplate.getForEntity(
+                url() + "/test/" + entity.getId(),
+                TestEntity.class
+        );
+
+        check(response.getStatusCode()).is(HttpStatus.NOT_FOUND);
     }
 }
