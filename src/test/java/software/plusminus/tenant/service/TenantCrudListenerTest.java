@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import software.plusminus.tenant.fixtures.TestEntity;
 import software.plusminus.tenant.fixtures.TestRepository;
 import software.plusminus.test.IntegrationTest;
+import software.plusminus.test.helpers.rest.ExtendedTestRestTemplate;
 
 import static org.mockito.Mockito.when;
 import static software.plusminus.check.Checks.check;
@@ -25,7 +26,7 @@ class TenantCrudListenerTest extends IntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
     @Autowired
-    private software.plusminus.test.util.TestRestTemplate pageRestTemplate;
+    private ExtendedTestRestTemplate extendedRestTemplate;
 
     @ParameterizedTest
     @CsvSource({
@@ -75,8 +76,9 @@ class TenantCrudListenerTest extends IntegrationTest {
         repository.save(entity);
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        Page<TestEntity> page = pageRestTemplate.getPage(
+        Page<TestEntity> page = extendedRestTemplate.getForGenericObject(
                 url() + "/test",
+                Page.class,
                 TestEntity.class
         );
 
@@ -85,6 +87,39 @@ class TenantCrudListenerTest extends IntegrationTest {
             check(page.getContent().get(0).getMyField()).is("first");
             check(page.getContent().get(0).getTenant()).is(objectTenant);
         }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "firstTenant,firstTenant,true",
+        "secondTenant,firstTenant,false",
+        ",firstTenant,false",
+        "firstTenant,,false",
+        ",,true",
+        "'','',true",
+        "'',,true",
+        ",'',true"
+    })
+    void readSingle(String objectTenant, String contextTenant, boolean present) {
+        TestEntity entity = new TestEntity();
+        entity.setMyField("first");
+        entity.setTenant(objectTenant);
+        repository.save(entity);
+        when(firstProvider.currentTenant()).thenReturn(contextTenant);
+
+        ResponseEntity<TestEntity> response = restTemplate.getForEntity(
+                url() + "/test/" + entity.getId(),
+                TestEntity.class
+        );
+
+        if (!present) {
+            check(response.getStatusCode()).is(HttpStatus.NOT_FOUND);
+            return;
+        }
+        check(response.getStatusCode()).is(HttpStatus.OK);
+        check(response.getBody().getId()).is(entity.getId());
+        check(response.getBody().getTenant()).is(objectTenant);
+        check(response.getBody().getMyField()).is("first");
     }
 
     @ParameterizedTest
@@ -150,7 +185,7 @@ class TenantCrudListenerTest extends IntegrationTest {
         );
 
         if (error) {
-            check(response.getStatusCode()).is(HttpStatus.BAD_REQUEST);
+            check(response.getStatusCode()).is(HttpStatus.NOT_FOUND);
             check(repository.count()).is(1);
             return;
         }

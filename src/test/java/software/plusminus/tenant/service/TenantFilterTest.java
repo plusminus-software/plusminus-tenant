@@ -2,13 +2,14 @@ package software.plusminus.tenant.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import software.plusminus.tenant.fixtures.TestEntity;
 import software.plusminus.tenant.fixtures.TestRepository;
 import software.plusminus.test.IntegrationTest;
-import software.plusminus.test.util.TestRestTemplate;
+import software.plusminus.test.helpers.rest.ExtendedTestRestTemplate;
 
 import static org.mockito.Mockito.when;
 import static software.plusminus.check.Checks.check;
@@ -21,6 +22,8 @@ class TenantFilterTest extends IntegrationTest {
     private TestRepository repository;
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private ExtendedTestRestTemplate extendedRestTemplate;
 
     @Test
     void page() {
@@ -34,7 +37,9 @@ class TenantFilterTest extends IntegrationTest {
         repository.save(entity2);
         when(firstProvider.currentTenant()).thenReturn("firstTenant");
 
-        Page<TestEntity> page = restTemplate.getPage(url() + "/test", TestEntity.class);
+        Page<TestEntity> page = extendedRestTemplate.getForGenericObject(url() + "/test",
+                Page.class,
+                TestEntity.class);
 
         check(page).isNotNull();
         check(page.getTotalElements()).is(1L);

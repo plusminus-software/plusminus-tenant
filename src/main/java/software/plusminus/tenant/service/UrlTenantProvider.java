@@ -1,6 +1,7 @@
 package software.plusminus.tenant.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.lang.Nullable;
@@ -14,8 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 
 @Order(2)
 @AllArgsConstructor
-@Component
+@ConditionalOnClass(HttpServletRequest.class)
 @ConditionalOnProperty(name = "tenant.useHostAsTenant")
+@Component
 public class UrlTenantProvider implements TenantProvider {
 
     private WritableContext<HttpServletRequest> requestContext;
