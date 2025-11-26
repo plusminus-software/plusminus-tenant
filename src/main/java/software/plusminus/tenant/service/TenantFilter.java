@@ -2,8 +2,8 @@ package software.plusminus.tenant.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import software.plusminus.context.Context;
 import software.plusminus.hibernate.HibernateFilter;
+import software.plusminus.tenant.context.TenantContext;
 
 import java.util.Collections;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.Map;
 @Component
 public class TenantFilter implements HibernateFilter {
 
-    private Context<String> tenantContext;
+    private TenantContext tenantContext;
 
     @Override
     public String filterName() {

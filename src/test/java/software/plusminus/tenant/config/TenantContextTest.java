@@ -3,7 +3,7 @@ package software.plusminus.tenant.config;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import software.plusminus.context.Context;
+import software.plusminus.tenant.context.TenantContext;
 import software.plusminus.tenant.service.TenantProvider;
 import software.plusminus.test.IntegrationTest;
 
@@ -17,7 +17,7 @@ class TenantContextTest extends IntegrationTest {
     @Autowired
     private TenantProvider secondProvider;
     @Autowired
-    private Context<String> tenantContext;
+    private TenantContext tenantContext;
 
     @ParameterizedTest
     @CsvSource({

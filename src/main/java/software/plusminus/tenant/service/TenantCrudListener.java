@@ -3,10 +3,10 @@ package software.plusminus.tenant.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import software.plusminus.context.Context;
 import software.plusminus.crud.CrudAction;
 import software.plusminus.crud.listener.CrudListener;
 import software.plusminus.tenant.annotation.Tenant;
+import software.plusminus.tenant.context.TenantContext;
 import software.plusminus.tenant.exception.NotFoundException;
 import software.plusminus.tenant.exception.TenantException;
 import software.plusminus.util.FieldUtils;
@@ -18,7 +18,7 @@ import java.util.Optional;
 @Component
 public class TenantCrudListener implements CrudListener<Object> {
 
-    private Context<String> tenantContext;
+    private TenantContext tenantContext;
 
     @Override
     public void onAction(Object object, CrudAction action) {
