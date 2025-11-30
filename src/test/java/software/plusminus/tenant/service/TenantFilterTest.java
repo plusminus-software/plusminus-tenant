@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import software.plusminus.tenant.fixtures.TestEntity;
 import software.plusminus.tenant.fixtures.TestRepository;
 import software.plusminus.test.IntegrationTest;
-import software.plusminus.test.helpers.rest.ExtendedTestRestTemplate;
 
 import static org.mockito.Mockito.when;
 import static software.plusminus.check.Checks.check;
@@ -22,8 +21,6 @@ class TenantFilterTest extends IntegrationTest {
     private TestRepository repository;
     @Autowired
     private TestRestTemplate restTemplate;
-    @Autowired
-    private ExtendedTestRestTemplate extendedRestTemplate;
 
     @Test
     void page() {
@@ -37,7 +34,7 @@ class TenantFilterTest extends IntegrationTest {
         repository.save(entity2);
         when(firstProvider.currentTenant()).thenReturn("firstTenant");
 
-        Page<TestEntity> page = extendedRestTemplate.getForGenericObject(url() + "/test",
+        Page<TestEntity> page = rest().pageRestTemplate().getForGenericObject(url() + "/test",
                 Page.class,
                 TestEntity.class);
 

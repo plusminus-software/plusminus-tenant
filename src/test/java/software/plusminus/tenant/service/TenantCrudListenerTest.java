@@ -3,7 +3,6 @@ package software.plusminus.tenant.service;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import software.plusminus.tenant.fixtures.TestEntity;
 import software.plusminus.tenant.fixtures.TestRepository;
 import software.plusminus.test.IntegrationTest;
-import software.plusminus.test.helpers.rest.ExtendedTestRestTemplate;
 
 import static org.mockito.Mockito.when;
 import static software.plusminus.check.Checks.check;
@@ -23,10 +21,6 @@ class TenantCrudListenerTest extends IntegrationTest {
     private TenantProvider firstProvider;
     @Autowired
     private TestRepository repository;
-    @Autowired
-    private TestRestTemplate restTemplate;
-    @Autowired
-    private ExtendedTestRestTemplate extendedRestTemplate;
 
     @ParameterizedTest
     @CsvSource({
@@ -41,7 +35,8 @@ class TenantCrudListenerTest extends IntegrationTest {
         entity.setTenant(objectTenant);
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        ResponseEntity<TestEntity> response = restTemplate.postForEntity(url() + "/test", entity, TestEntity.class);
+        ResponseEntity<TestEntity> response = rest().restTemplate()
+                .postForEntity(url() + "/test", entity, TestEntity.class);
 
         if (error) {
             check(response.getStatusCode()).is(HttpStatus.BAD_REQUEST);
@@ -76,7 +71,7 @@ class TenantCrudListenerTest extends IntegrationTest {
         repository.save(entity);
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        Page<TestEntity> page = extendedRestTemplate.getForGenericObject(
+        Page<TestEntity> page = rest().pageRestTemplate().getForGenericObject(
                 url() + "/test",
                 Page.class,
                 TestEntity.class
@@ -107,7 +102,7 @@ class TenantCrudListenerTest extends IntegrationTest {
         repository.save(entity);
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        ResponseEntity<TestEntity> response = restTemplate.getForEntity(
+        ResponseEntity<TestEntity> response = rest().restTemplate().getForEntity(
                 url() + "/test/" + entity.getId(),
                 TestEntity.class
         );
@@ -137,7 +132,7 @@ class TenantCrudListenerTest extends IntegrationTest {
         entity.setMyField("updated");
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        ResponseEntity<TestEntity> response = restTemplate.exchange(
+        ResponseEntity<TestEntity> response = rest().restTemplate().exchange(
                 url() + "/test",
                 HttpMethod.PUT,
                 new HttpEntity<>(entity),
@@ -177,7 +172,7 @@ class TenantCrudListenerTest extends IntegrationTest {
         patch.setMyField("patched");
         when(firstProvider.currentTenant()).thenReturn(contextTenant);
 
-        ResponseEntity<TestEntity> response = restTemplate.exchange(
+        ResponseEntity<TestEntity> response = rest().restTemplate().exchange(
                 url() + "/test",
                 HttpMethod.PATCH,
                 new HttpEntity<>(patch),
@@ -198,6 +193,4 @@ class TenantCrudListenerTest extends IntegrationTest {
         check(response.getBody().getMyField()).is("patched");
         check(response.getBody().getTenant()).is(expectedTenant);
     }
-
-
 }

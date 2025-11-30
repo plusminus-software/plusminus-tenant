@@ -12,7 +12,7 @@ import software.plusminus.security.Security;
 @AllArgsConstructor
 @ConditionalOnClass(Security.class)
 @Component
-public class SecurityContextTenantService implements TenantProvider {
+public class SecurityContextTenantProvider implements TenantProvider {
 
     private Context<Security> securityContext;
     
@@ -20,7 +20,8 @@ public class SecurityContextTenantService implements TenantProvider {
     @Override
     public String currentTenant() {
         return securityContext.optional()
-                .map(value -> value.getOthers().get("tenant"))
+                .map(Security::getParameters)
+                .map(parameters -> parameters.get("tenant"))
                 .orElse(null);
     }
 }
