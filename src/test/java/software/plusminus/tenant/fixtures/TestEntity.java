@@ -13,7 +13,7 @@ import javax.persistence.Id;
 
 @Data
 @FilterDef(name = "tenantFilter", parameters = @ParamDef(name = "tenant", type = "string"))
-@Filter(name = "tenantFilter", condition = "tenant = :tenant or (:tenant = '' and tenant is null)")
+@Filter(name = "tenantFilter", condition = "(tenant = :tenant or (:tenant = '' and tenant is null))")
 @Entity
 public class TestEntity {
     
