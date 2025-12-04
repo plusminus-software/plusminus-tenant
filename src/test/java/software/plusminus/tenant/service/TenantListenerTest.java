@@ -15,7 +15,7 @@ import software.plusminus.test.IntegrationTest;
 import static org.mockito.Mockito.when;
 import static software.plusminus.check.Checks.check;
 
-class TenantCrudListenerTest extends IntegrationTest {
+class TenantListenerTest extends IntegrationTest {
 
     @Autowired
     private TenantProvider firstProvider;
