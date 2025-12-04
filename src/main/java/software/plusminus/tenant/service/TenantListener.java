@@ -17,6 +17,8 @@ import java.util.Optional;
 @Component
 public class TenantListener implements CrudListener<Object> {
 
+    private static final ThreadLocal<Boolean> DISABLE = new ThreadLocal<>();
+
     private TenantContext tenantContext;
 
     @Override
@@ -25,6 +27,9 @@ public class TenantListener implements CrudListener<Object> {
     }
 
     private void onAction(Object object, CrudAction action, boolean singleRead) {
+        if (Boolean.TRUE.equals(DISABLE.get())) {
+            return;
+        }
         Optional<Field> field = FieldUtils.findFirstWithAnnotation(object.getClass(), Tenant.class);
         if (!field.isPresent()) {
             return;
@@ -57,6 +62,15 @@ public class TenantListener implements CrudListener<Object> {
                 throw new TenantException("Cannot peform action on object with tenant " + objectTenant
                         + " as the current tenant is " + contextTenant);
             }
+        }
+    }
+
+    public void runWithoutTenantCheck(Runnable runnable) {
+        DISABLE.set(Boolean.TRUE);
+        try {
+            runnable.run();
+        } finally {
+            DISABLE.remove();
         }
     }
 }
